@@ -1,7 +1,8 @@
 [package]
-name = "ads111x"
+name = "embedded-ads111x"
 version = "0.1.0"
 edition = "2021"
+authors = "Maciej Skrzypek"
 license = "MIT OR Apache-2.0"
 description = "ADS111x 16bit ADCs I2C rust driver no_std"
 repository = "https://github.com/wintermute101/ads111x.git"
