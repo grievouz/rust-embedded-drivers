@@ -1,4 +1,4 @@
-# ADS111x 16bit ADCs I2C rust driver
+# ADS111x 16bit ADCs I2C rust driver no_std
 Tested on ESP32 and ADS1115
 [Documentation](https://www.ti.com/product/ADS1115)
 
