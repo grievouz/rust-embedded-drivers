@@ -1,6 +1,6 @@
 [package]
 name = "embedded-ads111x"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Maciej Skrzypek <maciek.skrzypek [at] gmail.com"]
 license = "MIT OR Apache-2.0"

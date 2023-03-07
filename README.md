@@ -19,7 +19,7 @@ let mut adc = match ADS111x::new(i2c, 0x48u8, config){
 };
 
 match adc.read_single_voltage(None){
-    Ok(v) => println!("Val single {} {:.3}", v, f32::from(v) * 4.096f32 / f32::from(i16::MAX)),
+    Ok(v) => println!("Val single {:.6}", v),
     Err(e) => println!("Error {:?}", e),
 }
 ```

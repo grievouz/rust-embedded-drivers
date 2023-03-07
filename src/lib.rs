@@ -459,7 +459,7 @@ where
     /// ADC is in low power state until requested and will go back after conversion
     /// Will block until converstion is ready
     /// Mux can be used to reconfigure what ADC input to read
-    pub fn read_single_voltage(&mut self, mux: Option<InputMultiplexer>) -> Result<i16, E>{
+    pub fn read_single_voltage(&mut self, mux: Option<InputMultiplexer>) -> Result<f32, E>{
         if let Some(m) = mux{
             self.config.mux = m;
         }
@@ -485,9 +485,20 @@ where
     /// will return 0 when conversion was still ongoing
     /// You can use check_coversion_ready if needed
     /// only works when Mode is Continuous
-    pub fn read_voltage(&mut self) -> Result<i16, E> {
+    pub fn read_voltage(&mut self) -> Result<f32, E> {
         let mut voltage = [0, 0];
-        self.i2c.write_read(self.address, &[CONVERSION_REGISTER], &mut voltage).and(Ok(i16::from_be_bytes(voltage)))
+        self.i2c.write_read(self.address, &[CONVERSION_REGISTER], &mut voltage)?;
+        let val = i16::from_be_bytes(voltage);
+        let pga = match self.config.pga{
+            ProgramableGainAmplifier::V0_256 => 0.256f32,
+            ProgramableGainAmplifier::V0_512 => 0.512f32,
+            ProgramableGainAmplifier::V1_024 => 1.024f32,
+            ProgramableGainAmplifier::V2_048 => 2.048f32,
+            ProgramableGainAmplifier::V4_096 => 4.096f32,
+            ProgramableGainAmplifier::V6_144 => 6.144f32,
+        };
+
+        Ok(f32::from(val) * pga / 32768f32)
     }
 
     pub fn set_low_treshold(&mut self, low_tresh: i16) -> Result<(), E>{
