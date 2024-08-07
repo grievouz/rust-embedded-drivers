@@ -449,6 +449,11 @@ where
         Ok(ADS111x{ i2c, address, config} )
     }
 
+    ///Destroys driver instance and returns I²C bus instance.
+    pub fn destroy(self) -> I2C {
+        self.i2c
+    }
+
     ///Writes self configuration to device
     ///Config can be used to update configuration
     pub async fn write_config(&mut self, config: Option<ADS111xConfig>) -> Result<(), E>{
