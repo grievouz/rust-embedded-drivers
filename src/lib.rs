@@ -1,6 +1,6 @@
 #![no_std]
 
-use embedded_hal::blocking::i2c::{WriteRead, Write};
+use embedded_hal::i2c::{I2c};
 
 static CONVERSION_REGISTER : u8 = 0b00;
 static CONFIG_REGISTER     : u8 = 0b01;
@@ -422,9 +422,8 @@ pub struct ADS111x<I2C> {
 }
 
 impl<I2C, E> ADS111x<I2C>
-where 
-    I2C:WriteRead<Error = E>,
-    I2C:Write<Error = E>,
+where
+    I2C: I2c<Error = E>,
 {
     pub fn new(i2c: I2C, address: u8, config: ADS111xConfig) -> Result<Self, ADSError>{
         match address {
