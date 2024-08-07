@@ -1,6 +1,9 @@
 #![no_std]
 
-use embedded_hal::blocking::i2c::{WriteRead, Write};
+#[cfg(not(feature = "async"))]
+use embedded_hal::i2c::{I2c};
+#[cfg(feature = "async")]
+use embedded_hal_async::i2c::{I2c};
 
 static CONVERSION_REGISTER : u8 = 0b00;
 static CONFIG_REGISTER     : u8 = 0b01;
@@ -415,16 +418,25 @@ impl ADS111xConfig{
     }
 }
 
+#[maybe_async_cfg::maybe(
+    sync(cfg(not(feature = "async")),),
+    async(feature="async"),
+    keep_self
+)]
 pub struct ADS111x<I2C> {
     i2c: I2C,
     address: u8,
     config: ADS111xConfig,
 }
 
+#[maybe_async_cfg::maybe(
+    sync(cfg(not(feature = "async")),),
+    async(feature="async"),
+    keep_self
+)]
 impl<I2C, E> ADS111x<I2C>
-where 
-    I2C:WriteRead<Error = E>,
-    I2C:Write<Error = E>,
+where
+    I2C: I2c<Error = E>,
 {
     pub fn new(i2c: I2C, address: u8, config: ADS111xConfig) -> Result<Self, ADSError>{
         match address {
@@ -437,29 +449,34 @@ where
         Ok(ADS111x{ i2c, address, config} )
     }
 
+    ///Destroys driver instance and returns I²C bus instance.
+    pub fn destroy(self) -> I2C {
+        self.i2c
+    }
+
     ///Writes self configuration to device
     ///Config can be used to update configuration
-    pub fn write_config(&mut self, config: Option<ADS111xConfig>) -> Result<(), E>{
+    pub async fn write_config(&mut self, config: Option<ADS111xConfig>) -> Result<(), E>{
         if let Some(conf) = config{
             self.config = conf;
         }
         self.config.osw = OSW::Idle;
         let conf = self.config.bits().to_be_bytes();
-        self.i2c.write(self.address, &[CONFIG_REGISTER, conf[0], conf[1]])
+        self.i2c.write(self.address, &[CONFIG_REGISTER, conf[0], conf[1]]).await
     }
 
-    pub fn read_config(&mut self) -> Result<ADS111xConfig, E>{
+    pub async fn read_config(&mut self) -> Result<ADS111xConfig, E>{
         self.config.osw = OSW::Idle;
         let mut conf = [0, 0];
 
-        self.i2c.write_read(self.address, &[CONFIG_REGISTER], &mut conf).and(Ok(ADS111xConfig::from_bits(u16::from_be_bytes(conf))))
+        self.i2c.write_read(self.address, &[CONFIG_REGISTER], &mut conf).await.and(Ok(ADS111xConfig::from_bits(u16::from_be_bytes(conf))))
     }
 
     /// Perform single read when mode set to single
     /// ADC is in low power state until requested and will go back after conversion
     /// Will block until converstion is ready
     /// Mux can be used to reconfigure what ADC input to read
-    pub fn read_single_voltage(&mut self, mux: Option<InputMultiplexer>) -> Result<f32, E>{
+    pub async fn read_single_voltage(&mut self, mux: Option<InputMultiplexer>) -> Result<f32, E>{
         if let Some(m) = mux{
             self.config.mux = m;
         }
@@ -467,17 +484,17 @@ where
         let config = self.config.bits().to_be_bytes();
         let mut conf = [0, 0];
 
-        self.i2c.write_read(self.address, &[CONFIG_REGISTER, config[0], config[1]], &mut conf)?;
+        self.i2c.write_read(self.address, &[CONFIG_REGISTER, config[0], config[1]], &mut conf).await?;
 
         while OSR::from_bits(u16::from_be_bytes(conf)) == OSR::PerformingConversion{
-            self.i2c.write_read(self.address, &[CONFIG_REGISTER], &mut conf)?;
+            self.i2c.write_read(self.address, &[CONFIG_REGISTER], &mut conf).await?;
         }
 
-        self.read_voltage()
+        self.read_voltage().await
     }
 
-    pub fn check_cnversion_ready(&mut self) -> Result<bool, E>{
-        Ok(self.read_config()?.osr == OSR::DeviceIdle)
+    pub async fn check_cnversion_ready(&mut self) -> Result<bool, E>{
+        Ok(self.read_config().await?.osr == OSR::DeviceIdle)
     }
 
     /// Reads conversion
@@ -485,9 +502,9 @@ where
     /// will return 0 when conversion was still ongoing
     /// You can use check_coversion_ready if needed
     /// only works when Mode is Continuous
-    pub fn read_voltage(&mut self) -> Result<f32, E> {
+    pub async fn read_voltage(&mut self) -> Result<f32, E> {
         let mut voltage = [0, 0];
-        self.i2c.write_read(self.address, &[CONVERSION_REGISTER], &mut voltage)?;
+        self.i2c.write_read(self.address, &[CONVERSION_REGISTER], &mut voltage).await?;
         let val = i16::from_be_bytes(voltage);
         let pga = match self.config.pga{
             ProgramableGainAmplifier::V0_256 => 0.256f32,
@@ -501,13 +518,13 @@ where
         Ok(f32::from(val) * pga / 32768f32)
     }
 
-    pub fn set_low_treshold(&mut self, low_tresh: i16) -> Result<(), E>{
+    pub async fn set_low_treshold(&mut self, low_tresh: i16) -> Result<(), E>{
         let lt = low_tresh.to_be_bytes();
-        self.i2c.write(self.address, &[LO_THRESH_REGISTER, lt[0], lt[1]])
+        self.i2c.write(self.address, &[LO_THRESH_REGISTER, lt[0], lt[1]]).await
     }
 
-    pub fn set_high_treshold(&mut self, high_tresh: i16) -> Result<(), E>{
+    pub async fn set_high_treshold(&mut self, high_tresh: i16) -> Result<(), E>{
         let ht = high_tresh.to_be_bytes();
-        self.i2c.write(self.address, &[HI_THRESH_REGISTER, ht[0], ht[1]])
+        self.i2c.write(self.address, &[HI_THRESH_REGISTER, ht[0], ht[1]]).await
     }
 }
