@@ -1,9 +1,9 @@
 #![no_std]
 
 #[cfg(not(feature = "async"))]
-use embedded_hal::i2c::{I2c};
+use embedded_hal::i2c::I2c;
 #[cfg(feature = "async")]
-use embedded_hal_async::i2c::{I2c};
+use embedded_hal_async::i2c::I2c;
 
 static CONVERSION_REGISTER : u8 = 0b00;
 static CONFIG_REGISTER     : u8 = 0b01;
