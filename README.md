@@ -15,16 +15,18 @@ let config = ADS111xConfig::default()
     .dr(ads111x::DataRate::SPS8)
     .pga(ads111x::ProgramableGainAmplifier::V4_096);
 
+// Create a new ADS111x instance with the specified configuration
+// Note: This only creates the instance, it doesn't write the configuration to the chip
 let mut adc = match ADS111x::new(i2c, 0x48u8, config){
     Err(e) => panic!("Error {:?}", e),
     Ok(x) => x,
 };
 
-// Writes the configuration to the chip's registers
+// Write the configuration to the chip's registers
+// This step is necessary to apply the configuration
 if let Err(e) = adc.write_config(None) {
     panic!("Error {:?}", e);
 }
-
 
 match adc.read_single_voltage(None){
     Ok(v) => println!("Val single {:.6}", v),
@@ -49,12 +51,15 @@ let config = ADS111xConfig::default()
     .dr(ads111x::DataRate::SPS8)
     .pga(ads111x::ProgramableGainAmplifier::V4_096);
 
+// Create a new ADS111x instance with the specified configuration
+// Note: This only creates the instance, it doesn't write the configuration to the chip
 let mut adc = match ADS111x::new(i2c, 0x48u8, config){
     Err(e) => panic!("Error {:?}", e),
     Ok(x) => x,
 };
 
-// Writes the configuration to the chip's registers
+// Write the configuration to the chip's registers
+// This step is necessary to apply the configuration
 if let Err(e) = adc.write_config(None).await {
     panic!("Error {:?}", e);
 }
