@@ -364,7 +364,7 @@ impl ADS111xConfig{
     }
 
     fn from_bits(bits: u16) -> Self{
-        ADS111xConfig { 
+        ADS111xConfig {
             osr: OSR::from_bits(bits),
             osw: OSW::default(),
             mux: InputMultiplexer::from_bits(bits),
@@ -438,6 +438,8 @@ impl<I2C, E> ADS111x<I2C>
 where
     I2C: I2c<Error = E>,
 {
+    ///Create a new ADS111x instance with the specified configuration
+    ///Note: This only creates the instance, it doesn't write the configuration to the chip
     pub fn new(i2c: I2C, address: u8, config: ADS111xConfig) -> Result<Self, ADSError>{
         match address {
             0b1001000 => {},
@@ -454,8 +456,9 @@ where
         self.i2c
     }
 
-    ///Writes self configuration to device
+    ///Writes self configuration to to the chip's registers
     ///Config can be used to update configuration
+    ///This step is necessary to apply the configuration
     pub async fn write_config(&mut self, config: Option<ADS111xConfig>) -> Result<(), E>{
         if let Some(conf) = config{
             self.config = conf;
