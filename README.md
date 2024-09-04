@@ -20,6 +20,12 @@ let mut adc = match ADS111x::new(i2c, 0x48u8, config){
     Ok(x) => x,
 };
 
+// Writes the configuration to the chip's registers
+if let Err(e) = adc.write_config(None) {
+    panic!("Error {:?}", e);
+}
+
+
 match adc.read_single_voltage(None){
     Ok(v) => println!("Val single {:.6}", v),
     Err(e) => println!("Error {:?}", e),
@@ -47,6 +53,11 @@ let mut adc = match ADS111x::new(i2c, 0x48u8, config){
     Err(e) => panic!("Error {:?}", e),
     Ok(x) => x,
 };
+
+// Writes the configuration to the chip's registers
+if let Err(e) = adc.write_config(None).await {
+    panic!("Error {:?}", e);
+}
 
 match adc.read_single_voltage(None).await {
     Ok(v) => println!("Val single {:.6}", v),
