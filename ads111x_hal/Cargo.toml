@@ -1,0 +1,23 @@
+[package]
+name = "ads111x_hal"
+version = "0.2.0"
+edition = "2021"
+authors = ["Maciej Skrzypek <maciek.skrzypek [at] gmail.com"]
+license = "MIT OR Apache-2.0"
+description = "ADS111x 16bit ADCs I2C rust driver no_std"
+repository = "https://github.com/wintermute101/ads111x.git"
+categories = ["embedded", "no-std"]
+keywords = ["ADC", "embedded", "I2C", "driver"]
+readme = "./README.md"
+
+[dependencies]
+bitflags = "2.6.0"
+embedded-hal = "1.0.0"
+embedded-hal-async = { version = "1.0.0", optional = true }
+maybe-async-cfg = "0.2.4"
+thiserror = { version = "1.0", package = "thiserror-core", default-features = false }
+ads111x_hal_derive = { path = "../ads111x_hal_derive" } 
+
+[features]
+default = []
+async = ["dep:embedded-hal-async"]
