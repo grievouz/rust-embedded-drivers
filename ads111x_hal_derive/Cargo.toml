@@ -2,6 +2,15 @@
 name = "ads111x_hal_derive"
 version = "0.2.0"
 edition = "2021"
+authors = [
+    "Tammo Ronke <ronke.tammo [at] gmail.com"
+]
+license = "MIT"
+description = "ADS111x 16bit ADCs I2C rust driver no_std"
+repository = "https://github.com/grievouz/ads111x-hal.git"
+categories = ["embedded", "no-std"]
+keywords = ["ads111x_hal"]
+readme = "./README.md"
 
 [lib]
 proc-macro = true

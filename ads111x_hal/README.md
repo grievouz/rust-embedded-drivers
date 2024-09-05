@@ -1,83 +1,46 @@
-# ADS111x 16bit ADCs I2C rust driver no_std
-Tested on ESP32, STM32G421, and ADS1115
-[Documentation](https://www.ti.com/product/ADS1115)
+# ADS111x Hal
+
+> **Note**: This library is under active development. Breaking changes may occur in future minor releases.
+
+This is a platform-agnostic Rust driver for the ADS1113, ADS1114, and ADS1115 analog-to-digital converters (ADCs), based on the [`embedded-hal`](https://github.com/rust-embedded/embedded-hal) traits.
+
+## Features
+
+- Supports ADS1113, ADS1114, and ADS1115 devices
+- Configurable input multiplexer, gain amplifier, mode, data rate, and comparator settings
+- Single-shot and continuous conversion modes
+- Async support (optional feature)
+- No-std compatible
 
 ## Example
 
-### Blocking
-```rust
-let i2c_speed = RateExtU32::kHz(100);
-
-let i2c = I2C::new(peripherals.I2C0, io.pins.gpio19, io.pins.gpio23, i2c_speed, &mut system.peripheral_clock_control, &clocks);
-
-let config = ADS111xConfig::default()
-    .mux(ads111x::InputMultiplexer::AIN0GND)
-    .dr(ads111x::DataRate::SPS8)
-    .pga(ads111x::ProgramableGainAmplifier::V4_096);
-
-// Create a new ADS111x instance with the specified configuration
-// Note: This only creates the instance, it doesn't write the configuration to the chip
-let mut adc = match ADS111x::new(i2c, 0x48u8, config){
-    Err(e) => panic!("Error {:?}", e),
-    Ok(x) => x,
-};
-
-// Write the configuration to the chip's registers
-// This step is necessary to apply the configuration
-if let Err(e) = adc.write_config(None) {
-    panic!("Error {:?}", e);
-}
-
-match adc.read_single_voltage(None){
-    Ok(v) => println!("Val single {:.6}", v),
-    Err(e) => println!("Error {:?}", e),
-}
-```
-
-### Async
-
-Add feature `async` to `Cargo.toml`:
-
 ```toml
 [dependencies]
-embedded-ads111x = { features = ["async"] }
+ads111x_hal = "0.1.0"
 ```
 
 ```rust
-let mut i2c = I2c::new(p.I2C1, p.PA15, p.PB7, Irqs, p.DMA1_CH6, p.DMA1_CH5, hz(100_000), Default::default());
+use ads111x::{ADS111x, ADS111xConfig, InputMultiplexer, GainAmplifier, Mode, DataRate};
+let i2c = /* initialize your I2C bus */;
 
-let config = ADS111xConfig::default()
-    .mux(ads111x::InputMultiplexer::AIN0GND)
-    .dr(ads111x::DataRate::SPS8)
-    .pga(ads111x::ProgramableGainAmplifier::V4_096);
+let config = ADS111xConfig::new()
+    .with_multiplexer(InputMultiplexer::AIN0GND)
+    .with_gain_amplifier(GainAmplifier::V4_096)
+    .with_mode(Mode::Single)
+    .with_data_rate(DataRate::SPS128);
 
-// Create a new ADS111x instance with the specified configuration
-// Note: This only creates the instance, it doesn't write the configuration to the chip
-let mut adc = match ADS111x::new(i2c, 0x48u8, config){
-    Err(e) => panic!("Error {:?}", e),
-    Ok(x) => x,
-};
+let mut adc = ADS111x::new_and_configure(i2c, 0x48, config).await?;
 
-// Write the configuration to the chip's registers
-// This step is necessary to apply the configuration
-if let Err(e) = adc.write_config(None).await {
-    panic!("Error {:?}", e);
-}
+let voltage = adc.read_single_voltage(None).await?;
+println!("Voltage: {} V", voltage);
 
-match adc.read_single_voltage(None).await {
-    Ok(v) => println!("Val single {:.6}", v),
-    Err(e) => println!("Error {:?}", e),
-}
+Ok(())
 ```
+
 ## License
 
-Licensed under either of:
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+## Contributing
 
-### Contribution
-
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in
-the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without
-any additional terms or conditions.
+Contributions are welcome! Please feel free to submit a Pull Request.
