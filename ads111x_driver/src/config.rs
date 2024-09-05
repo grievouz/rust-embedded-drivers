@@ -1,4 +1,4 @@
-use ads111x_hal_derive::ConfigConversion;
+use ads111x_driver_derive::ConfigConversion;
 use bitflags::bitflags;
 
 bitflags! {

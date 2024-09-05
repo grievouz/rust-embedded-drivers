@@ -1,3 +1,3 @@
 [workspace]
 resolver = "2"
-members = ["ads111x_hal", "ads111x_hal_derive"]
+members = ["ads111x_driver", "ads111x_driver_derive"]

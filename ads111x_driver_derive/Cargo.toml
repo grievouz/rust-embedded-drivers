@@ -1,5 +1,5 @@
 [package]
-name = "ads111x_hal_derive"
+name = "ads111x_driver_derive"
 version = "0.2.0"
 edition = "2021"
 authors = [
@@ -9,7 +9,7 @@ license = "MIT"
 description = "ADS111x 16bit ADCs I2C rust driver no_std"
 repository = "https://github.com/grievouz/ads111x-hal.git"
 categories = ["embedded", "no-std"]
-keywords = ["ads111x_hal"]
+keywords = ["ads111x_driver"]
 readme = "./README.md"
 
 [lib]

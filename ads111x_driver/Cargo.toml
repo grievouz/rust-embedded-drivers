@@ -1,5 +1,5 @@
 [package]
-name = "ads111x_hal"
+name = "ads111x_driver"
 version = "0.2.0"
 edition = "2021"
 authors = [
@@ -19,7 +19,7 @@ embedded-hal = "1.0.0"
 embedded-hal-async = { version = "1.0.0", optional = true }
 maybe-async-cfg = "0.2.4"
 thiserror = { version = "1.0", package = "thiserror-core", default-features = false }
-ads111x_hal_derive = { path = "../ads111x_hal_derive" }
+ads111x_driver_derive = { path = "../ads111x_driver_derive" }
 
 [features]
 default = []

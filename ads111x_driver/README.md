@@ -16,7 +16,7 @@ This is a platform-agnostic Rust driver for the ADS1113, ADS1114, and ADS1115 an
 
 ```toml
 [dependencies]
-ads111x_hal = "0.1.0"
+ads111x_driver = "0.1.0"
 ```
 
 ```rust
