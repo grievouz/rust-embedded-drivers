@@ -98,14 +98,18 @@ where
     }
 
     pub async fn read_voltage(&mut self) -> Result<f32, ADSError<E>> {
-        let mut voltage = [0, 0];
-        self.i2c
-            .write_read(self.address, &[Register::CONVERSION.addr()], &mut voltage)
-            .await?;
-        let val = i16::from_be_bytes(voltage);
+        let val = self.read_raw().await?;
         let pga = self.config.gain_amplifier().voltage();
-
         Ok(f32::from(val) / i16::MAX as f32 * pga)
+    }
+
+    pub async fn read_raw(&mut self) -> Result<i16, ADSError<E>> {
+        let mut val_bytes = [0, 0];
+        self.i2c
+            .write_read(self.address, &[Register::CONVERSION.addr()], &mut val_bytes)
+            .await?;
+        let val = i16::from_be_bytes(val_bytes);
+        Ok(val)
     }
 
     pub async fn set_config<F>(&mut self, f: F) -> Result<(), E>
