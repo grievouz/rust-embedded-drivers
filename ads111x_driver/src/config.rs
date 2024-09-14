@@ -1,5 +1,5 @@
-use ads111x_driver_derive::ConfigConversion;
 use bitflags::bitflags;
+use embedded_driver_derive::bitflags::ConfigConversion;
 
 bitflags! {
     #[derive(Debug, Clone, Copy)]

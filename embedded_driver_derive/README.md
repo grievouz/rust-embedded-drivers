@@ -1,14 +1,8 @@
-# Rust Embedded Drivers
+# ADS111x Hal Derive
 
 > **Note**: This library is under active development. Breaking changes may occur in future minor releases.
 
-This workspace contains the following crates:
-
-- [ads111x_driver](./ads111x_driver): Driver for the ADS111x family of analog-to-digital converters.
-- [oled_i2c_driver](./oled_i2c_driver): Driver for multiple OLED screens.
-- [embedded_driver_derive](./embedded_driver_derive): Custom derive macros for internal use.
-
-Please refer to the individual crate READMEs for more detailed information about each crate.
+This crate should only be used as a dependency within the `ads111x_driver` crate. It is not meant to be used as a standalone library.
 
 ## License
 

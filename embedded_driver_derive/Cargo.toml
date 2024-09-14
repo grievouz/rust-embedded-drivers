@@ -1,0 +1,19 @@
+[package]
+name = "embedded_driver_derive"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Tammo Ronke <ronke.tammo@gmail.com"
+]
+license = "MIT"
+description = "ADS111x 16bit ADCs I2C rust driver no_std"
+repository = "https://github.com/grievouz/rust-embedded-drivers.git"
+readme = "./README.md"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = "2.0"

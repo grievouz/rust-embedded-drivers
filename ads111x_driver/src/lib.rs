@@ -60,7 +60,9 @@ where
         self.i2c
     }
 
-    pub async fn check_conversion_ready(&mut self) -> Result<bool, ADSError<E>> {
+    pub async fn check_conversion_ready(
+        &mut self,
+    ) -> Result<bool, ADSError<E>> {
         let config = self.read_config().await?;
         Ok(config.operational_status() == OperationalStatus::NotBusy)
     }
@@ -86,7 +88,8 @@ where
         }
 
         // Tell the chip to start a conversion
-        self.config = self.config.with_operational_status(OperationalStatus::Busy);
+        self.config =
+            self.config.with_operational_status(OperationalStatus::Busy);
         self.write_config().await?;
 
         while !self.check_conversion_ready().await? {
@@ -106,7 +109,11 @@ where
     pub async fn read_raw(&mut self) -> Result<i16, ADSError<E>> {
         let mut val_bytes = [0, 0];
         self.i2c
-            .write_read(self.address, &[Register::CONVERSION.addr()], &mut val_bytes)
+            .write_read(
+                self.address,
+                &[Register::CONVERSION.addr()],
+                &mut val_bytes,
+            )
             .await?;
         let val = i16::from_be_bytes(val_bytes);
         Ok(val)
@@ -133,7 +140,10 @@ where
     ) -> Result<(), E> {
         let lt = low_tresh.to_be_bytes();
         self.i2c
-            .write(self.address, &[Register::LOW_THRESHOLD.addr(), lt[0], lt[1]])
+            .write(
+                self.address,
+                &[Register::LOW_THRESHOLD.addr(), lt[0], lt[1]],
+            )
             .await
     }
 
@@ -143,7 +153,10 @@ where
     ) -> Result<(), E> {
         let ht = high_tresh.to_be_bytes();
         self.i2c
-            .write(self.address, &[Register::HIGH_THRESHOLD.addr(), ht[0], ht[1]])
+            .write(
+                self.address,
+                &[Register::HIGH_THRESHOLD.addr(), ht[0], ht[1]],
+            )
             .await
     }
 }

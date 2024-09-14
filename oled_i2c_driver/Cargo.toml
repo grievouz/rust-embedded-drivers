@@ -1,0 +1,23 @@
+[package]
+name = "oled_i2c_driver"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Tammo Ronke <ronke.tammo@gmail.com>",
+    "Corey Schuhen <cschuhen@gmail.com>",
+    "James Waples <james@wapl.es>",
+]
+license = "MIT OR Apache-2.0"
+description = ""
+repository = "https://github.com/grievouz/rust-embedded-drivers.git"
+readme = "README.md"
+
+[dependencies]
+embedded-hal = { version = "1.0.0", no-default-feature = true }
+embedded-graphics-core = { version = "0.4.0", optional = true, no-default-feature = true }
+display-interface = { version = "0.5", no-default-feature = true }
+
+[features]
+default = ["graphics"]
+defmt = ["embedded-graphics-core/defmt", "display-interface/defmt-03"]
+graphics = ["dep:embedded-graphics-core"]

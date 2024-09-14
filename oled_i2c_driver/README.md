@@ -1,14 +1,6 @@
-# Rust Embedded Drivers
+# OLED I2C Driver
 
 > **Note**: This library is under active development. Breaking changes may occur in future minor releases.
-
-This workspace contains the following crates:
-
-- [ads111x_driver](./ads111x_driver): Driver for the ADS111x family of analog-to-digital converters.
-- [oled_i2c_driver](./oled_i2c_driver): Driver for multiple OLED screens.
-- [embedded_driver_derive](./embedded_driver_derive): Custom derive macros for internal use.
-
-Please refer to the individual crate READMEs for more detailed information about each crate.
 
 ## License
 
